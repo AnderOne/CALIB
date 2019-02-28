@@ -1,18 +1,25 @@
 %Выполняет анимацию результатов моделирования, представленных в виде карты изолиний:
 %fname -- имя файла с контурами; min_t -- номер начального кадра; max_t -- номер последнего кадра; jmp_t -- число пропускаемых кадров;
-function draw_cont(fname, min_t, max_t, jmp_t, gif)
+function draw_cont(fname, min_t, max_t, jmp_t, rec, gif)
 
 	if (nargin < 1) error('Input file is not specified!'); end
 	if (nargin < 2) min_t = 0; end
 	if (nargin < 3) max_t = min_t; end
 	if (nargin < 4) jmp_t = 1; end
-	if (nargin < 5) gif = 0; end
+	if (nargin < 5) rec = []; end
+	if (nargin < 6) gif = 0; end
+	if ((length(rec) ~= 0) && (length(rec) ~= 4))
+		error('Incorrect frame parameter!');
+	end
 
 	fid = fopen(fname, 'rb');
 	%Считываем заголовок:
 	min_x = fread(fid, 1, 'double'); min_y = fread(fid, 1, 'double'); max_x = fread(fid, 1, 'double'); max_y = fread(fid, 1, 'double');
 	num_t = fread(fid, 1, 'uint32'); num_t = min(num_t, max_t);
 	hal_x = (max_x - min_x) / 2; hal_y = (max_y - min_y) / 2;
+	if (length(rec) == 0)
+		rec = [min_x, max_x, min_y, max_y];
+	end
 	for t = 0 : num_t
 		if ((t >= min_t) && ~mod(t, jmp_t))
 			%Читаем очередной кадр из файла:
@@ -71,7 +78,7 @@ function draw_cont(fname, min_t, max_t, jmp_t, gif)
 			RGB = (RGB <= 1).* RGB + (RGB > 1);
 		end
 		title(['timestep: ', num2str(t), '; nk(', num2str(num_p), '); nc (', num2str(num_c), ')']);
-		axis([min_x, max_x, min_y, max_y]);
+		axis(rec);
 		mov = getframe();
 		%drawnow
 		pause(0.1);

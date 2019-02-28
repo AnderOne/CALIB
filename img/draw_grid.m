@@ -1,12 +1,16 @@
 %Выполняет анимацию результатов моделирования, представленных в виде сеточных полей:
 %fname -- имя файла с контурами; min_t -- номер начального кадра; max_t -- номер последнего кадра; jmp_t -- число пропускаемых кадров;
-function draw_grid(fname, min_t, max_t, jmp_t, gif)
+function draw_grid(fname, min_t, max_t, jmp_t, rec, gif)
 
 	if (nargin < 1) error('Input file is not specified!'); end
 	if (nargin < 2) min_t = 0; end
 	if (nargin < 3) max_t = min_t; end
 	if (nargin < 4) jmp_t = 1; end
-	if (nargin < 5) gif = 0; end
+	if (nargin < 5) rec = []; end
+	if (nargin < 6) gif = 0; end
+	if ((length(rec) ~= 0) && (length(rec) ~= 4))
+		error('Incorrect frame parameter!');
+	end
 
 	fid = fopen(fname, 'rb');
 	%Считываем заголовок:
@@ -14,6 +18,9 @@ function draw_grid(fname, min_t, max_t, jmp_t, gif)
 	num_t = fread(fid, 1, 'uint32'); num_t = min(num_t, max_t);
 	num_x = fread(fid, 1, 'uint32'); len_x = (max_x - min_x) / (num_x - 1);
 	num_y = fread(fid, 1, 'uint32'); len_y = (max_y - min_y) / (num_y - 1);
+	if (length(rec) == 0)
+		rec = [min_x, max_x, min_y, max_y];
+	end
 	for t = 0 : num_t
 		%Читаем очередной кадр из файла:
 		if ((t >= min_t) && ~mod(t, jmp_t))
@@ -33,7 +40,7 @@ else
 end
 		shading flat
 		title(['timestep: ', num2str(t)]);
-		axis([min_x, max_x, min_y, max_y]);
+		axis(rec);
 		mov = getframe();
 		%drawnow
 		pause(0.1);
