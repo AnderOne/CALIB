@@ -90,7 +90,6 @@ function draw_cont(fname, min_t, max_t, jmp_t, rec, gif)
 			imwrite(im, map, 'cont.gif', 'DelayTime', 0.1, 'WriteMode', 'Append');
 		else
 			imwrite(im, map, 'cont.gif', 'DelayTime', 0.1);%, 'LoopCount', inf);
-			%imwrite(im, map, 'cont.gif', 'DelayTime', 0.1, 'LoopCount', inf);
 		end
 	end
 	%if (gif) imwrite(im, map, 'cont.png'); end

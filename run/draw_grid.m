@@ -51,8 +51,7 @@ end
 		if (t > min_t)
 			imwrite(im, map, 'grid.gif', 'DelayTime', 0.1, 'WriteMode', 'Append');
 		else
-			%imwrite(im, map, 'grid.gif', 'DelayTime', 0.1);%, 'LoopCount', inf);
-			imwrite(im, map, 'grid.gif', 'DelayTime', 0.1, 'LoopCount', inf);
+			imwrite(im, map, 'grid.gif', 'DelayTime', 0.1);%, 'LoopCount', inf);
 		end
 	end
 	%if (gif) imwrite(im, map, 'grid.png'); end
