@@ -4,7 +4,7 @@ namespace CALIB {
 
 //Обобщенный метод взятия производной:
 //по X:
-t_scal::t_data get_data_regular_differ_x(const t_scal::t_data &DATA, const t_grid::t_rect &RECT, t_flow::t_cond cond) {
+static t_scal::t_data get_data_regular_differ_x(const t_scal::t_data &DATA, const t_grid::t_rect &RECT, t_flow::t_cond cond) {
 	//...
 	t_size numx = RECT.numx(), numy = RECT.numy(); t_real lenx = RECT.lenx(), leny = RECT.leny(); t_scal::t_data DIFF(numx, numy);
 	//Вычисляем значения во внутренних узлах:
@@ -28,7 +28,7 @@ t_scal::t_data get_data_regular_differ_x(const t_scal::t_data &DATA, const t_gri
 	return std::move(DIFF);
 }
 //по Y:
-t_scal::t_data get_data_regular_differ_y(const t_scal::t_data &DATA, const t_grid::t_rect &RECT, t_flow::t_cond cond) {
+static t_scal::t_data get_data_regular_differ_y(const t_scal::t_data &DATA, const t_grid::t_rect &RECT, t_flow::t_cond cond) {
 	//...
 	t_size numx = RECT.numx(), numy = RECT.numy(); t_real lenx = RECT.lenx(), leny = RECT.leny(); t_scal::t_data DIFF(numx, numy);
 	//Вычисляем значения во внутренних узлах:
@@ -52,7 +52,7 @@ t_scal::t_data get_data_regular_differ_y(const t_scal::t_data &DATA, const t_gri
 	return std::move(DIFF);
 }
 
-t_vect::t_data get_data_regular_gradient(const t_scal::t_data &DATA, const t_grid::t_rect &RECT, t_flow::t_cond cond) {
+static t_vect::t_data get_data_regular_gradient(const t_scal::t_data &DATA, const t_grid::t_rect &RECT, t_flow::t_cond cond) {
 	//...
 	t_size numx = RECT.numx(), numy = RECT.numy(); t_vect::t_data VECT(numx, numy);
 	VECT()[0] = get_data_regular_differ_x(DATA, RECT, cond)();
@@ -61,7 +61,7 @@ t_vect::t_data get_data_regular_gradient(const t_scal::t_data &DATA, const t_gri
 	return std::move(VECT);
 }
 
-t_vect::t_data get_data_regular_velocity(const t_scal::t_data &DATA, const t_grid::t_rect &RECT, t_flow::t_cond cond) {
+static t_vect::t_data get_data_regular_velocity(const t_scal::t_data &DATA, const t_grid::t_rect &RECT, t_flow::t_cond cond) {
 	//...
 	t_size numx = RECT.numx(), numy = RECT.numy(); t_vect::t_data VECT(numx, numy);
 	VECT()[0] = - get_data_regular_differ_y(DATA, RECT, cond)();
@@ -70,8 +70,8 @@ t_vect::t_data get_data_regular_velocity(const t_scal::t_data &DATA, const t_gri
 	return std::move(VECT);
 }
 
-t_scal::t_data get_data_regular_jacobian(const t_scal::t_data &LHSF, const t_scal::t_data &RHSF,
-                                         const t_grid::t_rect &RECT, t_flow::t_cond cond) {
+static t_scal::t_data get_data_regular_jacobian(const t_scal::t_data &LHSF, const t_scal::t_data &RHSF,
+                                                const t_grid::t_rect &RECT, t_flow::t_cond cond) {
 
 	t_size numx = RECT.numx(), numy = RECT.numy();
 	t_real lenx = RECT.lenx(), leny = RECT.leny();
