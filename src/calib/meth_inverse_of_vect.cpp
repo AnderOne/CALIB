@@ -11,12 +11,29 @@ public t_meth {
 	inline explicit t_data_inverse_of_vect_analith(const c_vect_analith &_vect): VECT(_vect) {}
 
 	c_scal_regular run(const c_scal_regular &_scal) {
-		//TODO: Добавить процедуру вычисления якобиана!
-		__ERR_METH("This version not support Jacobian getting for a flow driven by velocity field!"); return nullptr;
+
+		c_vect_regular DIFF = t_meth::run_meth_regular_gradient(_scal);
+		c_grid_regular GRID = _scal->grid();
+		c_vect_regular TEMP = t_meth::run_meth_convert(VECT, GRID);
+		t_scal::t_data DATA(
+		         GRID->rect().numx(), GRID->rect().numy()
+		);
+		DATA() = TEMP->valx() * DIFF->valx() +
+		         TEMP->valy() * DIFF->valy();
+		return t_meth::new_scal_regular(GRID, std::move(DATA));
 	}
-	c_vect_scatter run(const c_grid_scatter &_grid) { return t_meth::run_meth_convert(VECT, _grid); }
-	t_bool run(t_real dt) { return true; }
-	t_bool run() { return true; }
+
+	c_vect_scatter run(const c_grid_scatter &_grid) {
+		return
+		t_meth::run_meth_convert(VECT, _grid);
+	}
+
+	t_bool run(t_real dt) {
+		return true;
+	}
+	t_bool run() {
+		return true;
+	}
 private:
 	c_vect_analith VECT;
 };
@@ -39,14 +56,24 @@ struct t_data_inverse_of_vect_regular:
 public t_data_inverse,
 public t_meth {
 
-	inline explicit t_data_inverse_of_vect_regular(const c_vect_regular &_vect): VECT(_vect), LAST(_vect), NEXT(_vect) {}
+	inline explicit t_data_inverse_of_vect_regular(const c_vect_regular &_vect):
+	                                               LAST(_vect), NEXT(_vect), VECT(_vect) {}
 
 	c_scal_regular run(const c_scal_regular &_scal) {
-		//TODO: Добавить процедуру вычисления якобиана!
-		__ERR_METH("This version not support Jacobian getting for a flow driven by velocity field!");
-		return nullptr;
+
+		c_vect_regular DIFF = t_meth::run_meth_regular_gradient(_scal);
+		c_grid_regular GRID = _scal->grid();
+		t_scal::t_data DATA(GRID->rect().numx(), GRID->rect().numy());
+		DATA() = VECT->valx() * DIFF->valx() +
+		         VECT->valy() * DIFF->valy();
+		return t_meth::new_scal_regular(GRID, std::move(DATA));
 	}
-	c_vect_scatter run(const c_grid_scatter &_grid) { return t_meth::run_meth_convert(VECT, _grid); }
+
+	c_vect_scatter run(const c_grid_scatter &_grid) {
+		return
+		t_meth::run_meth_convert(VECT, _grid);
+	}
+
 	t_bool run(t_real dt) {
 		if (dt == 1) { VECT = NEXT; return true; }
 		if (dt == 0) { VECT = LAST; return true; }
@@ -61,13 +88,15 @@ public t_meth {
 		VECT = LAST;
 		return true;
 	}
+
 	t_bool run() {
 		LAST = NEXT;
 		return true;
 	}
 private:
 	friend struct t_meth;
-	c_vect_regular LAST, NEXT;
+	c_vect_regular LAST;
+	c_vect_regular NEXT;
 	c_vect_regular VECT;
 };
 
