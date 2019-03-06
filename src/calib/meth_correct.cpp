@@ -595,7 +595,7 @@ public t_meth {
 					//Определяем наличие острого угла:
 					if (tx1 * tx2 + ty1 * ty2 >= 0) {
 						CURVI[ik] = 2.0 * (tx1 * ty2 - tx2 * ty1) /
-							sqrt(W1 * W1 + W2 * W2 + eps3);
+						                   sqrt(W1 * W1 + W2 * W2 + eps3);
 						CORNI[ik] = false;
 					}
 					else {
@@ -676,18 +676,14 @@ public t_meth {
 					do { s += DISTI[i]; i = i0 + ((i1 + (++ n1)) - i0) % n2; } while ((n1 < n2) && !CORNI[i]);
 					if (s < eps) continue;
 					//Добавляем новые узлы там, где это требуется:
-					t_long j = i0 + ((i1 + m1) - i0) % n2;
-					t_long m2 = (n1 < n2)? n1: n2;
+					t_long j = i0 + ((i1 + m1) - i0) % n2; t_long m2 = (n1 < n2)? n1: n2;
 					t_long n = (t_long) (s) + 1, m = NODEX.size() + n - 1;
 					t_real d, p, h = n / s;
 					j = i0 + ((i1 + m1 - 1) - i0) % n2;
 					s = 0;
 					while (NODEX.size() < m) {
 						while (s < 1) {
-							if (m1 < m2) {
-								j = i0 + (i1 + m1 - i0) % n2;
-								++ m1;
-							}
+							if (m1 < m2) { j = i0 + (i1 + (m1 ++) - i0) % n2; }
 							s += (d = h * DISTI[j]);
 						}
 						p = 1 - (s -= 1) / d;
@@ -846,7 +842,7 @@ c_scal_isoline t_meth::run_meth_correct(const c_scal_isoline &FROM, t_type_corre
 			(minl, maxl).run(FROM);
 	}
 	else {
-		__ERR_METH("Unknown type of the corrector!");
+		__ERR_METH("Unknown type of corrector!");
 	}
 	//Копируем параметры:
 	cpy_data(FROM, SCAL);
