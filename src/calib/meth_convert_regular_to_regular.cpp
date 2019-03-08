@@ -22,32 +22,32 @@
 
 namespace CALIB {
 
-inline static c_vect_scatter _new(const c_grid_scatter &GRID, t_vect::t_data &&DATA) { return t_meth::new_vect_scatter(GRID, std::move(DATA)); }
+inline static c_vect_regular _new(const c_grid_regular &GRID, t_vect::t_data &&DATA) { return t_meth::new_vect_regular(GRID, std::move(DATA)); }
 
-inline static c_scal_scatter _new(const c_grid_scatter &GRID, t_scal::t_data &&DATA) { return t_meth::new_scal_scatter(GRID, std::move(DATA)); }
+inline static c_scal_regular _new(const c_grid_regular &GRID, t_scal::t_data &&DATA) { return t_meth::new_scal_regular(GRID, std::move(DATA)); }
 
 template <typename T_INP, typename T_OUT>
-struct t_meth_convert_regular_to_scatter:
+struct t_meth_convert_regular_to_regular:
 public t_meth {
 
 	//Выполняет билинейную интерполяцию от регулярной сетки к точкам:
 	//NOTE: Bi-linear interpolation is used.
 	template <t_flow::t_cond cond>
-	inline static t_hand<const T_OUT> run_convert(const t_hand<const T_INP> &FROM, const c_grid_scatter &GRID) {
+	inline static t_hand<const T_OUT> run_convert(const t_hand<const T_INP> &FROM, const c_grid_regular &GRID) {
 
 		t_real minx = FROM->grid()->rect().minx(), miny = FROM->grid()->rect().miny();
 		t_real maxx = FROM->grid()->rect().maxx(), maxy = FROM->grid()->rect().maxy();
 		t_real lenx = FROM->grid()->rect().lenx(), leny = FROM->grid()->rect().leny();
 		t_size numx = FROM->grid()->rect().numx(), numy = FROM->grid()->rect().numy();
-		t_size numk = GRID->node().size();
 
-		const typename T_INP::t_data &BUFF = FROM->data(); const t_grid::t_node &NODE = GRID->node();
-		typename T_OUT::t_data DATA(numk);
+		const typename T_INP::t_data &BUFF = FROM->data(); const t_grid::t_rect &RECT = GRID->rect();
+		typename T_OUT::t_data DATA(RECT.numx(), RECT.numy());
 
-		for (t_long ik = 0; ik < numk; ++ ik) {
+		for (t_long ix = 0; ix < RECT.numx(); ++ ix)
+		for (t_long iy = 0; iy < RECT.numy(); ++ iy) {
 			t_real cx1, cy1, wx1, wy1, wx2, wy2; t_long ix1, iy1, ix2, iy2;
 			//Определяем индексы текущей ячейки:
-			cx1 = (NODE.valx(ik) - minx) / lenx; cy1 = (NODE.valy(ik) - miny) / leny;
+			cx1 = (RECT.valx(ix) - minx) / lenx; cy1 = (RECT.valy(iy) - miny) / leny;
 			ix2 = ((ix1 = floor(cx1)) + 1);
 			iy2 = ((iy1 = floor(cy1)) + 1);
 			//Учитываем граничные условия:
@@ -67,7 +67,7 @@ public t_meth {
 			}
 			//...
 			wx1 = 1.0 - (wx2 = cx1 - ix1); wy1 = 1.0 - (wy2 = cy1 - iy1);
-			DATA(ik) =
+			DATA(ix, iy) =
 			wy1 * (wx1 * BUFF(ix1, iy1) +
 			       wx2 * BUFF(ix2, iy1)
 			) +
@@ -81,7 +81,7 @@ public t_meth {
 		);
 	}
 
-	inline static t_hand<const T_OUT> run(const t_hand<const T_INP> &FROM, const c_grid_scatter &GRID) {
+	inline static t_hand<const T_OUT> run(const t_hand<const T_INP> &FROM, const c_grid_regular &GRID) {
 
 		t_flow::t_cond cond = GRID->flow()->cond();
 		if (FROM->grid()->flow() != GRID->flow()) {
@@ -100,19 +100,19 @@ public t_meth {
 	}
 };
 
-c_vect_scatter t_meth::run_meth_convert(const c_vect_regular &FROM, const c_grid_scatter &GRID) {
-	c_vect_scatter VECT =
-	t_meth_convert_regular_to_scatter<
-	t_vect_regular, t_vect_scatter
+c_vect_regular t_meth::run_meth_convert(const c_vect_regular &FROM, const c_grid_regular &GRID) {
+	c_vect_regular VECT =
+	t_meth_convert_regular_to_regular<
+	t_vect_regular, t_vect_regular
 	>::run(FROM, GRID);
 	t_meth::cpy_data(FROM, VECT);
 	return VECT;
 }
 
-c_scal_scatter t_meth::run_meth_convert(const c_scal_regular &FROM, const c_grid_scatter &GRID) {
-	c_scal_scatter SCAL =
-	t_meth_convert_regular_to_scatter<
-	t_scal_regular, t_scal_scatter
+c_scal_regular t_meth::run_meth_convert(const c_scal_regular &FROM, const c_grid_regular &GRID) {
+	c_scal_regular SCAL =
+	t_meth_convert_regular_to_regular<
+	t_scal_regular, t_scal_regular
 	>::run(FROM, GRID);
 	t_meth::cpy_data(FROM, SCAL);
 	return SCAL;

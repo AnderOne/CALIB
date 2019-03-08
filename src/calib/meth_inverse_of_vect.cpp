@@ -40,7 +40,9 @@ public t_meth {
 		);
 		DATA() = TEMP->valx() * DIFF->valx() +
 		         TEMP->valy() * DIFF->valy();
-		return t_meth::new_scal_regular(GRID, std::move(DATA));
+		return t_meth::new_scal_regular(
+		GRID, std::move(DATA)
+		);
 	}
 
 	c_vect_scatter run(const c_grid_scatter &_grid) {
@@ -84,9 +86,17 @@ public t_meth {
 		c_vect_regular DIFF = t_meth::run_meth_regular_gradient(_scal);
 		c_grid_regular GRID = _scal->grid();
 		t_scal::t_data DATA(GRID->rect().numx(), GRID->rect().numy());
-		DATA() = VECT->valx() * DIFF->valx() +
-		         VECT->valy() * DIFF->valy();
-		return t_meth::new_scal_regular(GRID, std::move(DATA));
+		c_vect_regular TEMP;
+		if (GRID != VECT->grid())
+		         TEMP = t_meth::run_meth_convert(VECT, GRID);
+		else {
+		         TEMP = VECT;
+		}
+		DATA() = TEMP->valx() * DIFF->valx() +
+		         TEMP->valy() * DIFF->valy();
+		return t_meth::new_scal_regular(
+		GRID, std::move(DATA)
+		);
 	}
 
 	c_vect_scatter run(const c_grid_scatter &_grid) {

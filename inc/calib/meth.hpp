@@ -103,10 +103,12 @@ struct t_meth {
 	static c_scal_isoline run_meth_convert(const c_scal_regular &FROM, const t_scal::t_rect &RECT);
 	static c_scal_regular run_meth_convert(const c_scal_isoline &FROM, const c_grid_regular &GRID);
 	static c_scal_regular run_meth_convert(const c_scal_analith &FROM, const c_grid_regular &GRID);
+	static c_scal_regular run_meth_convert(const c_scal_regular &FROM, const c_grid_regular &GRID);
 	static c_scal_scatter run_meth_convert(const c_scal_analith &FROM, const c_grid_scatter &GRID);
 	static c_scal_scatter run_meth_convert(const c_scal_regular &FROM, const c_grid_scatter &GRID);
 	//Конверторы векторных полей:
 	static c_vect_regular run_meth_convert(const c_vect_analith &FROM, const c_grid_regular &GRID);
+	static c_vect_regular run_meth_convert(const c_vect_regular &FROM, const c_grid_regular &GRID);
 	static c_vect_scatter run_meth_convert(const c_vect_analith &FROM, const c_grid_scatter &GRID);
 	static c_vect_scatter run_meth_convert(const c_vect_regular &FROM, const c_grid_scatter &GRID);
 	//Корректоры скалярных полей:
