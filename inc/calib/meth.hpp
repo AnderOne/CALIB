@@ -118,6 +118,7 @@ struct t_meth {
 	static t_bool run_meth_dynamic(const c_flow_plane2d &FLOW);
 	static t_bool run_meth_inverse(const c_flow_plane2d &FLOW);
 	//Инициализирует инвертор:
+	static t_bool set_data_inverse(const c_flow_plane2d &FLOW, const c_scal_isoline &RVORT);
 	static t_bool set_data_inverse(const c_flow_plane2d &FLOW, const c_scal_isoline &PVORT,
 	                                                           const c_scal_regular &DEPTH, t_real f0 = 0, t_real bt = 0);
 	static t_bool set_data_inverse(const c_flow_plane2d &FLOW, const c_scal_isoline &PVORT,

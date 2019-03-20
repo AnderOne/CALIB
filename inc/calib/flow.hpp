@@ -161,7 +161,8 @@ struct t_flow {
 
 	//Прямоугольная рамка:
 	struct t_rect {
-		inline t_rect(t_real minx, t_real maxx, t_real miny, t_real maxy): MIN{minx, miny}, MAX{maxx, maxy} {}
+		inline t_rect(t_real minx, t_real maxx, t_real miny, t_real maxy):
+		              MIN{minx, miny}, MAX{maxx, maxy}, LEN{maxx - minx, maxy - miny} {}
 		inline t_bool finx() const { return (MIN[0] != -INF) && (MAX[0] != +INF); }
 		inline t_bool finy() const { return (MIN[1] != -INF) && (MAX[1] != +INF); }
 		inline t_bool fin2() const { return finx() && finy(); }
@@ -171,9 +172,13 @@ struct t_flow {
 		inline t_real maxx() const { return MAX[0]; }
 		inline t_real maxy() const { return MAX[1]; }
 		inline t_item max2() const { return MAX; }
+		inline t_real lenx() const { return LEN[0]; }
+		inline t_real leny() const { return LEN[1]; }
+		inline t_item len2() const { return LEN; }
 	private:
 		t_item MIN{-INF, -INF};
 		t_item MAX{+INF, +INF};
+		t_item LEN{+INF, +INF};
 	};
 	//...
 	inline t_real time(t_real _time) { return TIME = _time; }
