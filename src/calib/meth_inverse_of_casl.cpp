@@ -330,8 +330,7 @@ public t_meth {
 		//Итерационный процесс:
 		t_scal::t_data STEMP(SFUNC->data());
 		t_scal::t_data RTEMP(RINIT);
-		static int i; t_real r = 0;
-		for (i = 0; i < MAX_ITER; ++ i) {
+		for (int i = 0; i < MAX_ITER; ++ i) {
 			RTEMP() = RINIT() + (DIFFH->valx() * VELOC->valy() - DIFFH->valy() * VELOC->valx());
 			//Вычисляем значения поля скорости в узлах сетки:
 			VELOC = run_meth_regular_velocity(
@@ -339,14 +338,12 @@ public t_meth {
 			);
 			get_hand(VELOC)->valz() /= DEPTH->valz();
 			//Проверяем условие остановки:
-			r = max(abs(SFUNC->valz() - STEMP()));
+			t_real r = max(abs(SFUNC->valz() - STEMP()));
 			if (r <= EPS * max(abs(STEMP()))) {
 				break;
 			}
 			STEMP() = SFUNC->valz();
 		}
-		//TEST: For debug only!
-		//std::cout << "[" << i << "] :: " << r << std::endl;
 		return true;
 	}
 
