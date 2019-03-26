@@ -49,9 +49,17 @@ all: $(CALIB) $(TEST) $(DEMO) $(OBJLIST)
 
 lib: $(CALIB)
 
+run: $(TEST)
+	@for run in $(TEST); do $$run \
+	--result_code=0 \
+	--report_level=short \
+	--log_level=message \
+	--color_output=1; \
+	done
+
 delete: clean
 	$(RM) $(CALIB) $(TEST) $(DEMO)
 clean:
 	$(RM) $(OBJLIST)
 
-.PHONY: all lib clean delete
+.PHONY: all lib run delete clean
