@@ -50,44 +50,109 @@ BOOST_AUTO_TEST_CASE(test_constructor) {
 	BOOST_REQUIRE(DAT0.size() == 0);
 	BOOST_REQUIRE(DAT0.nrow() == 0);
 	BOOST_REQUIRE(DAT0.ncol() == 0);
+
+	CALIB::t_data<CALIB::t_real> A(10);
+	for (int i = 0; i < A.size(); ++ i) { A(i) = i; }
+	CALIB::t_data<CALIB::t_real> B(A);
+	BOOST_REQUIRE(
+	(B.data() != A.data()) && check_data_1d(B, A)
+	);
+
+	CALIB::t_data<CALIB::t_real> C(std::move(A));
+	BOOST_REQUIRE(A.data() == 0);
+	BOOST_REQUIRE(A.size() == 0);
+	BOOST_REQUIRE(C.data() != 0);
+	BOOST_REQUIRE(
+	check_data_1d(C, B)
+	);
+}
+
+BOOST_AUTO_TEST_CASE(test_assignment) {
+
+	BOOST_TEST_MESSAGE("Testing data assignment");
+
+	CALIB::t_data<CALIB::t_real> A(10);
+	for (int i = 0; i < A.size(); ++ i) { A(i) = i; }
+
+	CALIB::t_data<CALIB::t_real> B;
+	B = A;
+	BOOST_REQUIRE(
+	(B.data() != A.data()) && check_data_1d(B, A)
+	);
+
+	CALIB::t_data<CALIB::t_real> C;
+	C = std::move(A);
+	BOOST_REQUIRE(A.data() == 0);
+	BOOST_REQUIRE(A.size() == 0);
+	BOOST_REQUIRE(C.data() != 0);
+	BOOST_REQUIRE(
+	check_data_1d(C, B)
+	);
 }
 
 BOOST_AUTO_TEST_CASE(test_resize) {
 
 	BOOST_TEST_MESSAGE("Testing data resize");
 
-	CALIB::t_data<CALIB::t_real> DATA;
+	CALIB::t_data<CALIB::t_real> A;
 
-	DATA.resize(5, 2);
-	BOOST_REQUIRE(DATA.data() != nullptr);
-	BOOST_REQUIRE(DATA.size() == 10);
-	BOOST_REQUIRE(DATA.nrow() == 5);
-	BOOST_REQUIRE(DATA.ncol() == 2);
+	A.resize(5, 2);
+	BOOST_REQUIRE(A.data() != nullptr);
+	BOOST_REQUIRE(A.size() == 10);
+	BOOST_REQUIRE(A.nrow() == 5);
+	BOOST_REQUIRE(A.ncol() == 2);
 
-	DATA.resize(10);
-	BOOST_REQUIRE(DATA.data() != nullptr);
-	BOOST_REQUIRE(DATA.size() == 10);
-	BOOST_REQUIRE(DATA.nrow() == 10);
-	BOOST_REQUIRE(DATA.ncol() == 1);
+	A.resize(10);
+	BOOST_REQUIRE(A.data() != nullptr);
+	BOOST_REQUIRE(A.size() == 10);
+	BOOST_REQUIRE(A.nrow() == 10);
+	BOOST_REQUIRE(A.ncol() == 1);
 }
 
 BOOST_AUTO_TEST_CASE(test_format) {
 
 	BOOST_TEST_MESSAGE("Testing data format");
 	//Column-major order is used:
-	CALIB::t_data<CALIB::t_long> DAT2(5, 2);
-	CALIB::t_long k = 0;
-	for (int j = 0; j < DAT2.ncol(); ++ j)
-	for (int i = 0; i < DAT2.nrow(); ++ i)
-		DAT2(i, j) = k ++;
-	
-	CALIB::t_data<CALIB::t_long> DAT1(5, 2);
-	for (int i = 0; i < DAT1.size(); ++ i)
-		DAT1(i) = i;
-
+	CALIB::t_data<CALIB::t_long> A(5, 2); CALIB::t_long k = 0;
+	for (int j = 0; j < A.ncol(); ++ j)
+	for (int i = 0; i < A.nrow(); ++ i) { A(i, j) = k ++; }
+	CALIB::t_data<CALIB::t_long> B(5, 2);
+	for (int i = 0; i < B.size(); ++ i) { B(i) = i; }
 	BOOST_REQUIRE(
-	check_data_2d(DAT2, DAT1)
+	check_data_2d(A, B)
 	);
+}
+
+BOOST_AUTO_TEST_CASE(test_slice) {
+
+	BOOST_TEST_MESSAGE("Testing data slice");
+
+	CALIB::t_data<CALIB::t_long> A(6, 8);
+	for (int j = 0; j < A.ncol(); ++ j)
+	for (int i = 0; i < A.nrow(); ++ i) { A(i, j) = -1; }
+	CALIB::t_data<CALIB::t_long> B(6, 8);
+	B() = -1;
+	BOOST_REQUIRE(check_data_2d(A, B));
+
+	for (int j = 0; j < A.ncol(); ++ j) { A(2, j) = 1; }
+	B(2, CALIB::t_sect()) = 1;
+	BOOST_REQUIRE(check_data_2d(A, B));
+
+	for (int i = 0; i < A.nrow(); ++ i) { A(i, 3) = 2; }
+	B(CALIB::t_sect(), 3) = 2;
+	BOOST_REQUIRE(check_data_2d(A, B));
+
+	for (int j = 1; j < A.ncol(); j += 3)
+	for (int i = 1; i < A.nrow(); i += 2) {
+		A(i, j) = 3;
+	}
+	B(CALIB::t_sect(1, B.nrow(), 2),
+	  CALIB::t_sect(1, B.ncol(), 3)
+	) = 3;
+	BOOST_REQUIRE(
+	check_data_2d(A, B)
+	);
+	//...
 }
 
 //...
