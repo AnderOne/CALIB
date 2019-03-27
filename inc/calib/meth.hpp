@@ -206,12 +206,11 @@ protected:
 	inline t_meth() {}
 };
 
-//...
 struct t_data_convert {
 	inline t_data_convert(t_real _avgz, t_size _fact): avgz(_avgz), fact(_fact) {}
 	t_real avgz; t_size fact;
 };
-//...
+
 struct t_data_correct {
 	inline t_data_correct(t_real _minl, t_real _maxl): minl(_minl), maxl(_maxl) {}
 	/*virtual c_scal_isoline run_renoder(const c_scal_isoline &_scal) = 0;
@@ -219,12 +218,12 @@ struct t_data_correct {
 	virtual ~t_data_correct();*/
 	t_real minl; t_real maxl;
 };
-//...
+
 struct t_data_dynamic {
 	inline t_data_dynamic(t_real _lent): lent(_lent) {}
 	t_real lent;
 };
-//...
+
 struct t_data_inverse {
 	virtual c_scal_regular run(const c_scal_regular &_scal) = 0;
 	virtual c_vect_scatter run(const c_grid_scatter &_grid) = 0;
