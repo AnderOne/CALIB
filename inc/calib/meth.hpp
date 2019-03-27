@@ -141,13 +141,13 @@ struct t_meth {
 
 	//Геттеры:
 	static c_flux_regular get_flux_regular(const c_flow &FLOW, t_name name) {
-		return get_flux_regular(get_flux(FLOW, name.tolower()));
+		return get_flux_regular(get_flux(FLOW, name));
 	}
 	static c_flux_isoline get_flux_isoline(const c_flow &FLOW, t_name name) {
-		return get_flux_isoline(get_flux(FLOW, name.tolower()));
+		return get_flux_isoline(get_flux(FLOW, name));
 	}
 	static c_flux_scatter get_flux_scatter(const c_flow &FLOW, t_name name) {
-		return get_flux_scatter(get_flux(FLOW, name.tolower()));
+		return get_flux_scatter(get_flux(FLOW, name));
 	}
 	static c_flux get_flux(const c_flow &FLOW, t_name name);
 	static t_real get_test(const c_flow &FLOW, t_name name);

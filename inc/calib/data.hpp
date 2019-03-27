@@ -40,18 +40,22 @@ template <typename K, typename V> using t_dict = std::map<K, V>;
 
 template <typename V> using t_list = std::vector<V>;
 
-struct t_name: public std::string {
-	template <typename ... T> t_name(T ... args): std::string(args ...) {}
-	inline t_name tolower() const {
-		t_name s(*this);
-		std::transform(s.begin(), s.end(), s.begin(), ::tolower);
-		return s;
-	}
-	inline t_name toupper() const {
-		t_name s(*this);
-		std::transform(s.begin(), s.end(), s.begin(), ::toupper);
-		return s;
-	}
+struct t_name {
+
+	template <typename ... T> t_name(T ... args):
+	str(args ...) { std::transform(str.begin(), str.end(), str.begin(), ::tolower); }
+
+	inline bool operator==(const t_name &rhs) const { return str == rhs.str; }
+	inline bool operator!=(const t_name &rhs) const { return str != rhs.str; }
+	inline bool operator>=(const t_name &rhs) const { return str >= rhs.str; }
+	inline bool operator<=(const t_name &rhs) const { return str <= rhs.str; }
+	inline bool operator>(const t_name &rhs) const { return str > rhs.str; }
+	inline bool operator<(const t_name &rhs) const { return str < rhs.str; }
+
+	inline char operator[] (size_t pos) const { return str[pos]; }
+	inline size_t size() const { return str.size(); }
+private:
+	std::string str;
 };
 
 typedef blitz::Range t_sect;

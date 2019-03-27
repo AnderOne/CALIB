@@ -248,7 +248,7 @@ c_scal_analith t_meth::new_scal_analith(const t_scal::t_func &FUNC) {
 /** Генераторы трассеров **/
 
 c_flux_regular t_meth::new_flux_regular(const c_scal_regular &SCAL, t_name name) {
-	name = name.tolower(); c_flow FLOW = SCAL->grid()->flow();
+	c_flow FLOW = SCAL->grid()->flow();
 	if (HIDE::FLUX_OF_FLOW[FLOW][name] != nullptr) {
 		__ERR_METH("Can't overwrite existing flux object by same name!");
 	}
@@ -258,7 +258,7 @@ c_flux_regular t_meth::new_flux_regular(const c_scal_regular &SCAL, t_name name)
 }
 
 c_flux_isoline t_meth::new_flux_isoline(const c_scal_isoline &SCAL, t_name name) {
-	name = name.tolower(); c_flow FLOW = SCAL->grid()->flow();
+	c_flow FLOW = SCAL->grid()->flow();
 	if (HIDE::FLUX_OF_FLOW[FLOW][name] != nullptr) {
 		__ERR_METH("Can't overwrite existing flux object by same name!");
 	}
@@ -268,7 +268,7 @@ c_flux_isoline t_meth::new_flux_isoline(const c_scal_isoline &SCAL, t_name name)
 }
 
 c_flux_scatter t_meth::new_flux_scatter(const c_scal_scatter &SCAL, t_name name) {
-	name = name.tolower(); c_flow FLOW = SCAL->grid()->flow();
+	c_flow FLOW = SCAL->grid()->flow();
 	if (HIDE::FLUX_OF_FLOW[FLOW][name] != nullptr) {
 		__ERR_METH("Can't overwrite existing flux object by same name!");
 	}
@@ -278,7 +278,7 @@ c_flux_scatter t_meth::new_flux_scatter(const c_scal_scatter &SCAL, t_name name)
 }
 
 c_flux_scatter t_meth::new_flux_scatter(const c_grid_scatter &GRID, t_name name) {
-	name = name.tolower(); c_flow FLOW = GRID->flow();
+	c_flow FLOW = GRID->flow();
 	if (HIDE::FLUX_OF_FLOW[FLOW][name] != nullptr) {
 		__ERR_METH("Can't overwrite existing flux object by same name!");
 	}
@@ -420,10 +420,8 @@ const t_dict<t_name, c_flux> &t_meth::get_flux(const c_flow &FLOW) {
 }
 
 c_flux t_meth::get_flux(const c_flow &FLOW, t_name name) {
-	name = name.tolower();
 	c_flux F =
-	HIDE::FLUX_OF_FLOW
-	[FLOW][name];
+	HIDE::FLUX_OF_FLOW[FLOW][name];
 	return F;
 }
 
