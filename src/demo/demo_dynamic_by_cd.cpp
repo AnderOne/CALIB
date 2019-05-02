@@ -47,7 +47,7 @@ int main() {
 	t_meth::set_data_dynamic(FLOW, 0.1);
 
 	//Выполняем перераспределение узлов:
-	ISOL = t_meth::run_meth_correct(ISOL, RENODER);
+	ISOL = t_meth::run_meth_correct(ISOL, t_meth::RENODER);
 
 	f_scal_isoline fisol(fopen("isol.dat", "wb"));
 	fisol.write(ISOL);
@@ -58,9 +58,9 @@ int main() {
 		std::cout << "time-step: " << i << std::endl;
 		t_meth::run_meth_dynamic(FLOW);
 		if (i % 20 == 0) {
-			t_meth::run_meth_correct(FLOW, SURGERY);
+			t_meth::run_meth_correct(FLOW, t_meth::SURGERY);
 		}
-		t_meth::run_meth_correct(FLOW, RENODER);
+		t_meth::run_meth_correct(FLOW, t_meth::RENODER);
 		if (i % 20 != 0) continue;
 		ISOL = t_meth::get_flux_isoline(
 			FLOW, "ISOL"

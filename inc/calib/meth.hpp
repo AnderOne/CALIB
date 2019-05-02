@@ -21,27 +21,72 @@
 #ifndef __INCLUDE_METH_H
 #define __INCLUDE_METH_H
 
+#include <exception>
+#include <iostream>
+
 #include "data.hpp"
 #include "hand.hpp"
 #include "flow.hpp"
-
-#include <exception>
-#include <iostream>
 
 #define __ERR_METH(text) { throw std::logic_error(text); }
 
 namespace CALIB {
 
-typedef t_hand<struct t_data_of_scal> h_data_of_scal;
-typedef t_hand<struct t_data_of_flow> h_data_of_flow;
-typedef t_hand<struct t_data_convert> h_data_convert;
-typedef t_hand<struct t_data_correct> h_data_correct;
-typedef t_hand<struct t_data_dynamic> h_data_dynamic;
-typedef t_hand<struct t_data_inverse> h_data_inverse;
-
-enum t_type_correct { RENODER = 0, SURGERY = 1 };
-
 struct t_meth {
+
+	struct t_data_convert {
+		inline t_data_convert(t_real _avgz, t_size _fact): avgz(_avgz), fact(_fact) {}
+		t_real avgz; t_size fact;
+	};
+
+	struct t_data_correct {
+		inline t_data_correct(t_real _minl, t_real _maxl): minl(_minl), maxl(_maxl) {}
+		/*virtual c_scal_isoline run_renoder(const c_scal_isoline &_scal) = 0;
+		virtual c_scal_isoline run_surgery(const c_scal_isoline &_scal) = 0;
+		virtual ~t_data_correct();*/
+		t_real minl; t_real maxl;
+	};
+
+	struct t_data_dynamic {
+		inline t_data_dynamic(t_real _lent): lent(_lent) {}
+		t_real lent;
+	};
+
+	struct t_data_inverse {
+		virtual c_scal_regular run(const c_scal_regular &_scal) = 0;
+		virtual c_vect_scatter run(const c_grid_scatter &_grid) = 0;
+		virtual t_bool run(t_real dt) = 0;
+		virtual t_bool run() = 0;
+		virtual ~t_data_inverse() {}
+	};
+
+	struct t_data_of_scal {
+		t_hand<t_data_convert> CONVERT;
+		t_hand<t_data_correct> CORRECT;
+	};
+
+	struct t_data_of_flow {
+		t_hand<t_data_dynamic> DYNAMIC;
+		t_hand<t_data_inverse> INVERSE;
+	};
+
+	enum t_type_correct {
+		RENODER = 0,
+		SURGERY = 1
+	};
+
+	typedef t_hand<t_data_of_scal>
+	h_data_of_scal;
+	typedef t_hand<t_data_of_flow>
+	h_data_of_flow;
+	typedef t_hand<t_data_convert>
+	h_data_convert;
+	typedef t_hand<t_data_correct>
+	h_data_correct;
+	typedef t_hand<t_data_dynamic>
+	h_data_dynamic;
+	typedef t_hand<t_data_inverse>
+	h_data_inverse;
 
 	inline static c_flow_plane2d get_flow_plane2d(const c_flow &_flow) { return _flow.get<const t_flow_plane2d>(); }
 	inline static c_grid_scatter get_grid_scatter(const c_grid &_grid) { return _grid.get<const t_grid_scatter>(); }
@@ -206,41 +251,34 @@ protected:
 	inline t_meth() {}
 };
 
-struct t_data_convert {
-	inline t_data_convert(t_real _avgz, t_size _fact): avgz(_avgz), fact(_fact) {}
-	t_real avgz; t_size fact;
-};
+typedef t_meth::t_data_of_scal
+t_data_of_scal;
 
-struct t_data_correct {
-	inline t_data_correct(t_real _minl, t_real _maxl): minl(_minl), maxl(_maxl) {}
-	/*virtual c_scal_isoline run_renoder(const c_scal_isoline &_scal) = 0;
-	virtual c_scal_isoline run_surgery(const c_scal_isoline &_scal) = 0;
-	virtual ~t_data_correct();*/
-	t_real minl; t_real maxl;
-};
+typedef t_meth::t_data_of_flow
+t_data_of_flow;
 
-struct t_data_dynamic {
-	inline t_data_dynamic(t_real _lent): lent(_lent) {}
-	t_real lent;
-};
+typedef t_meth::t_data_convert
+t_data_convert;
+typedef t_meth::t_data_correct
+t_data_correct;
 
-struct t_data_inverse {
-	virtual c_scal_regular run(const c_scal_regular &_scal) = 0;
-	virtual c_vect_scatter run(const c_grid_scatter &_grid) = 0;
-	virtual t_bool run(t_real dt) = 0;
-	virtual t_bool run() = 0;
-	virtual ~t_data_inverse() {}
-};
+typedef t_meth::t_data_dynamic
+t_data_dynamic;
+typedef t_meth::t_data_inverse
+t_data_inverse;
 
-struct t_data_of_scal {
-	t_hand<t_data_convert> CONVERT;
-	t_hand<t_data_correct> CORRECT;
-};
-
-struct t_data_of_flow {
-	t_hand<t_data_dynamic> DYNAMIC;
-	t_hand<t_data_inverse> INVERSE;
-};
+typedef t_meth::h_data_of_scal
+h_data_of_scal;
+typedef t_meth::h_data_of_flow
+h_data_of_flow;
+typedef t_meth::h_data_convert
+h_data_convert;
+typedef t_meth::h_data_correct
+h_data_correct;
+typedef t_meth::h_data_dynamic
+h_data_dynamic;
+typedef t_meth::h_data_inverse
+h_data_inverse;
 
 //...
 

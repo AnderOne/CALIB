@@ -59,7 +59,7 @@ int main() {
 	t_meth::set_data_correct(ISOL, 0.001, 0.5);
 
 	//Выполняем перераспределение узлов на контуре:
-	ISOL = t_meth::run_meth_correct(ISOL, RENODER);
+	ISOL = t_meth::run_meth_correct(ISOL, t_meth::RENODER);
 
 	f_scal_isoline fisol(fopen("isol.dat", "wb"));
 	fisol.write(ISOL);
