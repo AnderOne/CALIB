@@ -21,10 +21,11 @@
 #ifndef __INCLUDE_FLOW_H
 #define __INCLUDE_FLOW_H
 
+#include <functional>
+
 #include "hand.hpp"
 #include "data.hpp"
-
-#include <functional>
+#include "geom.hpp"
 
 namespace CALIB {
 
@@ -106,58 +107,16 @@ typedef t_hand<struct t_flux_isoline> h_flux_isoline;
 typedef t_hand<struct t_flux_regular> h_flux_regular;
 typedef t_hand<struct t_flux> h_flux;
 
-//...
-
 /** Структуры потоков жидкости **/
-
-#define IS_PERIODX(cond) (cond & 0x1)
-#define IS_PERIODY(cond) (cond & 0x2)
 
 struct t_flow {
 
-	//Перечислимый тип возможных краевых условий:
-	typedef enum { PERIOD0 = 0, PERIODX = 1, PERIODY = 2, PERIOD2 = 3 } t_cond;
+	template <CALIB::t_cond cond, typename TYPE> using t_geom = CALIB::t_geom<cond, TYPE>;
 
 	//Тип элемента области (двумерной точки):
 	typedef CALIB::t_item<t_real, 2> t_item;
 
-	//Шаблонный класс операций над точками:
-	template <t_cond cond, typename TYPE>
-	struct t_geom {
-		//Разность между точками:
-		inline TYPE subx(TYPE lhsx, TYPE rhsx) const { if (IS_PERIODX(cond)) return sub1<0> (lhsx, rhsx); else return sub0<0> (lhsx, rhsx); }
-		inline TYPE suby(TYPE lhsy, TYPE rhsy) const { if (IS_PERIODY(cond)) return sub1<1> (lhsy, rhsy); else return sub0<1> (lhsy, rhsy); }
-		template <int ind>
-		inline TYPE sub1(TYPE lhs, TYPE rhs) const {
-			lhs -= rhs; return (lhs < 0)? ((- lhs > hlf[ind])? (lhs + len[ind]): (lhs)): ((lhs > hlf[ind])? (lhs - len[ind]): (lhs));
-		}
-		template <int ind>
-		inline TYPE sub0(TYPE lhs, TYPE rhs) const {
-			return lhs - rhs;
-		}
-		//Контроль точек:
-		inline TYPE movx(TYPE valx) const { if (IS_PERIODX(cond)) return mov1<0> (valx); else return mov0<0> (valx); }
-		inline TYPE movy(TYPE valy) const { if (IS_PERIODY(cond)) return mov1<1> (valy); else return mov0<1> (valy); }
-		template <int ind>
-		inline TYPE mov1(TYPE val) const {
-			if (val < min[ind]) val += len[ind]; else if (val > max[ind]) val -= len[ind];
-			return val;
-		}
-		template <int ind>
-		inline TYPE mov0(TYPE val) const {
-			if (val < min[ind]) val = min[ind]; else if (val > max[ind]) val = max[ind];
-			return val;
-		}
-		inline t_geom(TYPE _minx, TYPE _maxx, TYPE _miny, TYPE _maxy):
-		              min{_minx, _miny}, max{_maxx, _maxy} {
-			len[0] = max[0] - min[0];
-			len[1] = max[1] - min[1];
-			hlf[0] = len[0] / 2; hlf[1] = len[1] / 2;
-		}
-		inline t_geom() {}
-	private:
-		TYPE min[2], max[2], len[2], hlf[2];
-	};
+	typedef CALIB::t_cond t_cond;
 
 	//Прямоугольная рамка:
 	struct t_rect {
@@ -219,10 +178,14 @@ protected:
 struct t_grid {
 	//Массив узлов:
 	struct t_node: public t_data<t_real, 2> {
-		template <typename ... T> inline auto valx(T ... args) const -> decltype(auto) { return (*this)(args ...)[0]; }
-		template <typename ... T> inline auto valy(T ... args) const -> decltype(auto) { return (*this)(args ...)[1]; }
-		template <typename ... T> inline auto valx(T ... args) -> decltype(auto) { return (*this)(args ...)[0]; }
-		template <typename ... T> inline auto valy(T ... args) -> decltype(auto) { return (*this)(args ...)[1]; }
+		template <typename ... T>
+		inline auto valx(T ... args) const -> decltype(auto) { return (*this)(args ...)[0]; }
+		template <typename ... T>
+		inline auto valy(T ... args) const -> decltype(auto) { return (*this)(args ...)[1]; }
+		template <typename ... T>
+		inline auto valx(T ... args) -> decltype(auto) { return (*this)(args ...)[0]; }
+		template <typename ... T>
+		inline auto valy(T ... args) -> decltype(auto) { return (*this)(args ...)[1]; }
 		inline explicit t_node(t_size size):
 		                t_data<t_real, 2> (size) {}
 		inline explicit t_node():
@@ -230,10 +193,14 @@ struct t_grid {
 	};
 	//Массив шагов:
 	struct t_step: public t_data<t_size, 2> {
-		template <typename ... T> inline auto head(T ... args) const -> decltype(auto) { return (*this)(args ...)[0]; }
-		template <typename ... T> inline auto tail(T ... args) const -> decltype(auto) { return (*this)(args ...)[1]; }
-		template <typename ... T> inline auto head(T ... args) -> decltype(auto) { return (*this)(args ...)[0]; }
-		template <typename ... T> inline auto tail(T ... args) -> decltype(auto) { return (*this)(args ...)[1]; }
+		template <typename ... T>
+		inline auto head(T ... args) const -> decltype(auto) { return (*this)(args ...)[0]; }
+		template <typename ... T>
+		inline auto tail(T ... args) const -> decltype(auto) { return (*this)(args ...)[1]; }
+		template <typename ... T>
+		inline auto head(T ... args) -> decltype(auto) { return (*this)(args ...)[0]; }
+		template <typename ... T>
+		inline auto tail(T ... args) -> decltype(auto) { return (*this)(args ...)[1]; }
 		inline explicit t_step(t_size size):
 		                t_data<t_size, 2> (size) {}
 		inline explicit t_step():
@@ -244,8 +211,10 @@ struct t_grid {
 	private:
 		t_data<t_byte, 1> STAT;
 	public:
-		template <typename ... T> inline auto stat(T ... args) const -> decltype(auto) { return STAT(args ...); }
-		template <typename ... T> inline auto stat(T ... args) -> decltype(auto) { return STAT(args ...); }
+		template <typename ... T>
+		inline auto stat(T ... args) const -> decltype(auto) { return STAT(args ...); }
+		template <typename ... T>
+		inline auto stat(T ... args) -> decltype(auto) { return STAT(args ...); }
 		inline explicit t_cont(t_size size):
 		                t_step(size), STAT(size) {}
 		inline explicit t_cont():

@@ -24,6 +24,7 @@
 #include "func.hpp"
 #include "hand.hpp"
 #include "data.hpp"
+#include "geom.hpp"
 #include "flow.hpp"
 #include "meth.hpp"
 
