@@ -25,15 +25,15 @@
 namespace CALIB {
 
 //Абстрактный класс инвертора по замкнутым интегралам:
-struct t_meth_intergc  {
+struct t_meth_integrc  {
 
 	virtual t_vect::t_data get(const c_scal_isoline &VORT, const t_grid::t_node &MARK) = 0;
-	virtual ~t_meth_intergc() {}
+	virtual ~t_meth_integrc() {}
 };
 
 template <t_flow::t_cond cond>
-struct t_meth_intergc_temp:
-public t_meth_intergc {
+struct t_meth_integrc_temp:
+public t_meth_integrc {
 
 	virtual t_vect::t_data get(const c_scal_isoline &VORT, const t_grid::t_node &MARK) {
 
@@ -45,25 +45,26 @@ public t_meth_intergc {
 		t_vect::t_data DATA(MARK.size());
 
 		for (t_size k = 0; k < MARK.size(); ++ k) {
+
 			t_real x  = MARK.valx(k), y  = MARK.valy(k), dz = VORT->rect().lenz();
 			t_real fx = 0, fy = 0;
+
 			for (t_size c = 0; c < CONT.size(); ++ c) {
+
 				t_size i0  = CONT.head(c), nn = CONT.tail(c), in = i0 + nn;
 				t_real x1  = NODE.valx(in - 2), y1  = NODE.valy(in - 2);
 				t_real x2  = NODE.valx(in - 1), y2  = NODE.valy(in - 1);
 				t_real dx1 = GEOM.subx(x2, x1), dy1 = GEOM.suby(y2, y1);
 				t_real sx = 0, sy = 0;
+
 				for (t_size i = i0; i < in; ++ i) {
-					//...
+
 					t_real x3 = NODE.valx(i), y3 = NODE.valy(i);
-					//...
 					t_real dx2 = GEOM.subx(x3, x2);
 					t_real dy2 = GEOM.suby(y3, y2);
-					//...
 					t_real dx = GEOM.subx(x, x2);
 					t_real dy = GEOM.suby(y, y2);
 					t_real fz;
-					//...
 					if (std::abs(dx) + std::abs(dy) > 1.e-14) {
 						//NOTE: Green's function!
 						if (cond == t_flow::t_cond::PERIODX) {
@@ -79,15 +80,17 @@ public t_meth_intergc {
 						sx += fz * (dx1 + dx2);
 						sy += fz * (dy1 + dy2);
 					}
-					//...
+
 					dx1 = dx2; dy1 = dy2;
 					x1 = x2; y1 = y2;
 					x2 = x3; y2 = y3;
 				}
+
 				fx += sx / (2 * nn);
 				fy += sy / (2 * nn);
 				
 			}
+
 			DATA.valx(k) = - dz * fx;
 			DATA.valy(k) = - dz * fy;
 		}
@@ -95,11 +98,11 @@ public t_meth_intergc {
 		return DATA;
 	}
 
-	inline t_meth_intergc_temp(const t_flow::t_rect &RECT): GEOM(
+	inline t_meth_integrc_temp(const t_flow::t_rect &RECT): GEOM(
 	RECT.minx(), RECT.maxx(), RECT.miny(), RECT.maxy()
 	) {}
 
-	virtual ~t_meth_intergc_temp() {}
+	virtual ~t_meth_integrc_temp() {}
 private:
 	t_flow::t_geom<cond, t_real> GEOM;
 };
@@ -112,9 +115,9 @@ public t_meth {
 
 		t_flow::t_cond cond = FLOW->cond();
 
-		if (cond == t_flow::t_cond::PERIOD0) METH = new t_meth_intergc_temp<t_flow::t_cond::PERIOD0> (FLOW->rect());
-		if (cond == t_flow::t_cond::PERIODX) METH = new t_meth_intergc_temp<t_flow::t_cond::PERIODX> (FLOW->rect());
-		if (cond == t_flow::t_cond::PERIODY) METH = new t_meth_intergc_temp<t_flow::t_cond::PERIODY> (FLOW->rect());
+		if (cond == t_flow::t_cond::PERIOD0) METH = new t_meth_integrc_temp<t_flow::t_cond::PERIOD0> (FLOW->rect());
+		if (cond == t_flow::t_cond::PERIODX) METH = new t_meth_integrc_temp<t_flow::t_cond::PERIODX> (FLOW->rect());
+		if (cond == t_flow::t_cond::PERIODY) METH = new t_meth_integrc_temp<t_flow::t_cond::PERIODY> (FLOW->rect());
 		//...
 	}
 
@@ -133,7 +136,7 @@ public t_meth {
 	t_bool run() { return true; }
 protected:
 	t_weak<const t_flow_plane2d> FLOW;
-	t_hand<t_meth_intergc> METH;
+	t_hand<t_meth_integrc> METH;
 };
 
 t_bool t_meth::set_data_inverse(const c_flow_plane2d &FLOW, const c_scal_isoline &RVORT) {
