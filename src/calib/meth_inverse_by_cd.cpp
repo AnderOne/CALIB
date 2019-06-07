@@ -98,9 +98,7 @@ public t_meth_integrc {
 		return DATA;
 	}
 
-	inline t_meth_integrc_temp(const t_flow::t_rect &RECT): GEOM(
-	RECT.minx(), RECT.maxx(), RECT.miny(), RECT.maxy()
-	) {}
+	inline t_meth_integrc_temp(const t_flow::t_rect &RECT): GEOM(RECT.minx(), RECT.maxx(), RECT.miny(), RECT.maxy()) {}
 
 	virtual ~t_meth_integrc_temp() {}
 private:
@@ -115,9 +113,15 @@ public t_meth {
 
 		t_flow::t_cond cond = FLOW->cond();
 
-		if (cond == t_flow::t_cond::PERIOD0) METH = new t_meth_integrc_temp<t_flow::t_cond::PERIOD0> (FLOW->rect());
-		if (cond == t_flow::t_cond::PERIODX) METH = new t_meth_integrc_temp<t_flow::t_cond::PERIODX> (FLOW->rect());
-		if (cond == t_flow::t_cond::PERIODY) METH = new t_meth_integrc_temp<t_flow::t_cond::PERIODY> (FLOW->rect());
+		if (cond == t_flow::t_cond::PERIOD0) {
+			METH = new t_meth_integrc_temp<t_cond::PERIOD0> (FLOW->rect());
+		}
+		if (cond == t_flow::t_cond::PERIODX) {
+			METH = new t_meth_integrc_temp<t_cond::PERIODX> (FLOW->rect());
+		}
+		if (cond == t_flow::t_cond::PERIODY) {
+			METH = new t_meth_integrc_temp<t_cond::PERIODY> (FLOW->rect());
+		}
 		//...
 	}
 
@@ -127,7 +131,7 @@ public t_meth {
 	c_vect_scatter run(const c_grid_scatter &_grid) {
 		c_scal_isoline VORT = t_meth::get_flux_isoline(FLOW, "RVORT")->scal();
 		return t_meth::new_vect_scatter(
-			_grid, METH->get(VORT, _grid->node())
+		_grid, METH->get(VORT, _grid->node())
 		);
 	}
 
@@ -142,7 +146,8 @@ protected:
 t_bool t_meth::set_data_inverse(const c_flow_plane2d &FLOW, const c_scal_isoline &RVORT) {
 
 	if ((RVORT->grid()->flow() != FLOW)) {
-		__ERR_METH("Incompatible parameters of inversion! (objects belonging different flows)");
+		__ERR_METH("Incompatible parameters of inversion! "
+		           "(objects belonging different flows)");
 	}
 	//Определяем параметры потока:
 	t_flow::t_cond cond = FLOW->cond();

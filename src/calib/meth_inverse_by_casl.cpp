@@ -391,7 +391,8 @@ t_bool t_meth::set_data_inverse(const c_flow_plane2d &FLOW, const c_scal_isoline
                                                             const c_grid_regular &GRID, t_real f0, t_real bt) {
 
 	if ((PVORT->grid()->flow() != GRID->flow()) || (GRID->flow() != FLOW)) {
-		__ERR_METH("Incompatible parameters of inversion! (objects belonging different flows)");
+		__ERR_METH("Incompatible parameters of inversion! "
+		           "(objects belonging different flows)");
 	}
 	//Определяем параметры потока:
 	t_flow::t_cond cond = FLOW->cond();

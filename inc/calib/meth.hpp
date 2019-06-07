@@ -41,9 +41,6 @@ struct t_meth {
 
 	struct t_data_correct {
 		inline t_data_correct(t_real _minl, t_real _maxl): minl(_minl), maxl(_maxl) {}
-		/*virtual c_scal_isoline run_renoder(const c_scal_isoline &_scal) = 0;
-		virtual c_scal_isoline run_surgery(const c_scal_isoline &_scal) = 0;
-		virtual ~t_data_correct();*/
 		t_real minl; t_real maxl;
 	};
 
