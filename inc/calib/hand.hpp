@@ -119,7 +119,9 @@ t_link {
 	inline t_hand<H> get() const {
 		static_assert(!std::is_const<T>::value ||
 		               std::is_const<H>::value, "Violation of a const qualifier!");
-		if (!buff || !dynamic_cast<H *> (static_cast<T *> (buff->data))) return nullptr;
+		if (!buff || !dynamic_cast<H *> (static_cast<T *> (buff->data))) {
+			return nullptr;
+		}
 		t_hand<H> ptr;
 		ptr.set(buff);
 		return ptr;
@@ -165,7 +167,7 @@ t_link {
 		static_assert(!std::is_const<T>::value, "Violation of a const qualifier!");
 		t_link::del();
 	}
-	inline void off() {
+	void off() final {
 		if (buff == nullptr) return;
 		//assert(buff->hard.size());
 		buff->hard.erase(this);
@@ -200,7 +202,7 @@ t_link {
 		off();
 	}
 private:
-	void set(t_buff *_buf) {
+	void set(t_buff *_buf) final {
 		if (buff != _buf) { off(); buff = _buf; }
 		if (buff) {
 			buff->hard.insert(this);
@@ -246,7 +248,9 @@ t_link {
 		static_assert(!std::is_const<T>::value ||
 		               std::is_const<H>::value, "Violation of a const qualifier!");
 		t_weak<H> ptr;
-		if (!buff || !dynamic_cast<H *> (static_cast<T *> (buff->data))) return ptr;
+		if (!buff || !dynamic_cast<H *> (static_cast<T *> (buff->data))) {
+			return ptr;
+		}
 		ptr.set(buff);
 		return ptr;
 	}
@@ -291,7 +295,7 @@ t_link {
 		static_assert(!std::is_const<T>::value, "Violation of a const qualifier!");
 		t_link::del();
 	}
-	inline void off() {
+	void off() final {
 		if (buff != nullptr) { buff->weak.erase(this); buff = nullptr; }
 	}
 
@@ -310,7 +314,7 @@ t_link {
 		off();
 	}
 private:
-	void set(t_buff *_buf) {
+	void set(t_buff *_buf) final {
 		if (buff != _buf) { off(); buff = _buf; }
 		if (buff) {
 			buff->weak.insert(this);
