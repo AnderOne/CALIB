@@ -24,7 +24,7 @@ file(GLOB TEST_SRC "./src/test/*.cpp")
 
 #Add target library
 
-add_library(calib ${CALIB_SRC})
+add_library(calib SHARED ${CALIB_SRC})
 
 target_include_directories(calib PRIVATE ./inc)
 
