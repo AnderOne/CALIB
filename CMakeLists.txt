@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -O3")
 
 find_library(BLITZ_LIB libblitz.a PATHS ./lib)
-find_library(FFTW3_LIB libfftw3.a)
+find_library(FFTW3_LIB libfftw3.a PATHS ./lib)
 
 if (NOT BLITZ_LIB)
 message(FATAL_ERROR "File 'libblitz.a' not found! Blitz library must be installed!")
