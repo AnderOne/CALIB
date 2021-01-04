@@ -8,6 +8,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -O3")
 
+option(BUILD_SHARED "Build shared library" ON)
+
 find_library(BLITZ_LIB libblitz.a PATHS ./lib)
 find_library(FFTW3_LIB libfftw3.a PATHS ./lib)
 
@@ -24,7 +26,11 @@ file(GLOB TEST_SRC "./src/test/*.cpp")
 
 #Add target library
 
+if (BUILD_SHARED)
 add_library(calib SHARED ${CALIB_SRC})
+else ()
+add_library(calib ${CALIB_SRC})
+endif()
 
 target_include_directories(calib PRIVATE ./inc)
 
